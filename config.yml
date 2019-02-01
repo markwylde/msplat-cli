@@ -1,0 +1,25 @@
+name: Example Configuration
+workdir: ~/Documents/example/stacks
+stacks:
+  gateway:
+    configuration:
+      url: git@github.com:msplat/gateway-configuration.git
+
+    api:
+      url: git@github.com:msplat/gateway-api.git
+
+    docker-spy:
+      url: git@github.com:msplat/gateway-docker-spy.git
+
+    proxy:
+      url: git@github.com:msplat/gateway-proxy.git
+
+  auth:
+    configuration:
+      url: git@github.com:msplat/auth-configuration.git
+
+    api:
+      url: git@github.com:msplat/auth-api.git
+
+    ui:
+      url: git@github.com:msplat/auth-ui.git
