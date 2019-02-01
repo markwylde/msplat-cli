@@ -36,7 +36,7 @@ $ export MSPLAT_CONFIG=~/Documents/example
 $ mtk --help
 
 NAME:
-   mtk - A new cli application
+   msplat toolkit - A cli for managing msplat environments
 USAGE:
    mtk [global options] command [command options] [arguments...]
 
