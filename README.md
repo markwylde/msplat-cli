@@ -2,6 +2,13 @@
 
 The msplat cli is a command line interface for managing a microservices platform using the msplat concept. This project is very new and hasn't even reached it's alpha version.
 
+# Tutorials
+The wiki has some tutorials and getting started guides for creating your first msplat environment.
+
+- [Create a new Development Environment](https://github.com/msplat/msplat-cli/wiki/Create-a-new-development-environment)
+- [Create a new Production Environment](https://github.com/msplat/msplat-cli/wiki/Create-a-production-environment)
+- [...more tutorials](https://github.com/msplat/msplat-cli/wiki)
+
 # Build
 You will need go version 1.11.4 or higher, as this project uses go modules.
 
