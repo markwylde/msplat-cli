@@ -5,12 +5,23 @@ You will need go version 1.11.4 or higher, as this project uses go modules.
 
 To build you can execute the `build.sh` file in the root of the project:
 ```bash
+## To build ignoring autocomplete
 ./build.sh
+
+## To build and activate autocomplete in the active shell
+. ./build.sh
 ```
 
 This will produce a binary at `dist/mtk` which can be installed globally:
 ```bash
 sudo ln -s `pwd`/dist/mtk /usr/local/bin/mtk
+```
+
+## Autocomplete
+The CLI comes with autocomplete functionality. To activate it you will need to run the following for every shell. Alternatively you can add it to your `.bashrc` file.
+
+```
+cd dist && PROG=mtk source ../autocomplete/bash_autocomplete
 ```
 
 # Usage
