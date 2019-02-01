@@ -14,7 +14,12 @@ sudo ln -s `pwd`/dist/mtk /usr/local/bin/mtk
 ```
 
 # Usage
+Before using the cli you will need to define the working directory of the environment.
+
+You can do this by specifying the `MSPLAT_CONFIG` environment variable or providing a `--config` flag.
+
 ```bash
+$ export MSPLAT_CONFIG=~/Documents/example
 $ mtk --help
 
 NAME:
