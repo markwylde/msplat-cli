@@ -2,10 +2,22 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"strings"
 
+	Auroro "github.com/logrusorgru/aurora"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
+
+	utils "msplat-cli/src/utils"
 )
+
+func ensureDirectoryExists(path string) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, os.ModePerm)
+	}
+}
 
 // CreateProjectCommands : Creates a command for "add"
 func CreateProjectCommands() []cli.Command {
@@ -18,17 +30,38 @@ func CreateProjectCommands() []cli.Command {
 					Name:  "clone",
 					Usage: "clone all or some projects",
 					Action: func(c *cli.Context) error {
-						fmt.Println("clone is not implemented yet\nthe following is a list of the stacks projects:\n")
+
+						fmt.Println("Cloning projects...")
+
+						stacksPath := viper.GetString("paths.stacks")
+						ensureDirectoryExists(stacksPath)
 
 						var stacks = viper.GetStringMap("stacks")
 
 						for stackKey := range stacks {
 							var projects = viper.GetStringMap("stacks." + stackKey)
 
-							fmt.Printf("%s\n", stackKey)
+							fmt.Printf("%s\n", Auroro.Bold(stackKey))
 							for projectKey := range projects {
 								var project = viper.GetStringMap("stacks." + stackKey + "." + projectKey)
-								fmt.Printf(" %s=%s\n", projectKey, project["url"])
+								stackPath := path.Join(stacksPath, stackKey)
+								projectPath := path.Join(stacksPath, stackKey, projectKey)
+
+								ensureDirectoryExists(stackPath)
+
+								if _, err := os.Stat(projectPath); !os.IsNotExist(err) {
+									gitStatus := utils.ExecuteCwd("git status", projectPath)
+									if strings.Contains(gitStatus, "Your branch is up to date") {
+										gitStatus = fmt.Sprintf("%s %s", "and is", Auroro.Green("up to date"))
+									} else {
+										gitStatus = fmt.Sprintf("%s %s", "but is", Auroro.Red("not up to date"))
+									}
+
+									fmt.Printf("  %s %s, %s. Skipping clone.\n", projectKey, Auroro.Brown("already exists"), gitStatus)
+								} else {
+									utils.ExecuteCwd(fmt.Sprintf("git clone %s %s", project["url"], projectKey), stackPath)
+									fmt.Printf("  %s %s.\n", projectKey, Auroro.Green("successfully cloned"))
+								}
 							}
 							fmt.Printf("\n")
 						}

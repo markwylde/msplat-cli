@@ -1,5 +1,6 @@
 name: Example Configuration
-workdir: ~/Documents/example/stacks
+paths:
+  stacks: /Users/mark/Documents/bumbana/stacks
 stacks:
   gateway:
     configuration:
