@@ -61,6 +61,28 @@ func cloneProjects(c *cli.Context) error {
 	return nil
 }
 
+func buildOnMachine(wg *sync.WaitGroup, bright bool, ip string, id string, projectPath string, verbose bool) {
+	fmt.Printf("  Executing %s on machine %s\n", Auroro.Cyan("docker-compose build"), ip)
+	_, errText, err := utils.ExecuteCwdStream(fmt.Sprintf("DOCKER_HOST=tcp://%s:2376 docker-compose build", ip), projectPath, func(stdout string) {
+		if !verbose {
+			if strings.HasPrefix(stdout, "Successfully tagged ") {
+				fmt.Printf("  Successfully built %s on machine %s\n", Auroro.Green(strings.TrimPrefix(stdout, "Successfully tagged ")), Auroro.Green(ip))
+			}
+		} else {
+			if bright {
+				fmt.Printf("    %s (%s): %s\n", Auroro.Bold(id), ip, stdout)
+			} else {
+				fmt.Printf("\u001b[30;1m    %s (%s): %s\u001b[0m\n", id, ip, stdout)
+			}
+		}
+	})
+
+	if err != nil {
+		log.Fatalf("Build %s on machine %s with error:\n%s\n\n%s", Auroro.Red("failed"), Auroro.Red(ip), errText, Auroro.Magenta("Try running the command again with the --verbose flag for more information"))
+	}
+	defer wg.Done()
+}
+
 func buildProjects(c *cli.Context) error {
 	fmt.Println("Building images...")
 
@@ -78,31 +100,19 @@ func buildProjects(c *cli.Context) error {
 			log.Fatal(err)
 		}
 
-		machines := gjson.Get(resp, "#.Status.Addr").Array()
+		machines := gjson.Parse(resp).Array()
 
 		var wg sync.WaitGroup
 		wg.Add(len(machines))
-		for _, addr := range machines {
-			go func(ip string) {
-				tag := 0
-				fmt.Printf("  Executing %s on machine %s\n", Auroro.Cyan("docker-compose build"), ip)
-				_, errText, err := utils.ExecuteCwdStream(fmt.Sprintf("DOCKER_HOST=tcp://%s:2376 docker-compose build", ip), projectPath, func(stdout string) {
-					if !c.GlobalBool("verbose") {
-						if tag == 1 {
-							fmt.Printf("  Successfully built %s on machine %s\n", Auroro.Green(stdout), Auroro.Green(ip))
-							tag = 0
-						}
-						if tag == 0 && stdout == "tagged" {
-							tag = 1
-						}
-					}
-				})
+		for i, machine := range machines {
+			machineIP := machine.Get("Status.Addr").String()
+			machineID := machine.Get("ID").String()
 
-				if err != nil {
-					log.Fatalf("Build %s on machine %s with error:\n%s\n\n%s", Auroro.Red("failed"), Auroro.Red(ip), errText, Auroro.Magenta("Try running the command again with the --verbose flag for more information"))
-				}
-				defer wg.Done()
-			}(addr.String())
+			if i == 0 {
+				go buildOnMachine(&wg, true, machineIP, machineID, projectPath, c.GlobalBool("verbose"))
+			} else {
+				go buildOnMachine(&wg, false, machineIP, machineID, projectPath, c.GlobalBool("verbose"))
+			}
 		}
 		wg.Wait()
 

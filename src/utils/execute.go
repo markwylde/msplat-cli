@@ -75,7 +75,7 @@ func ExecuteCwdStream(command string, cwd string, fn func(stdout string)) (outSt
 	cmd.Start()
 
 	scanner := bufio.NewScanner(stdout)
-	scanner.Split(bufio.ScanWords)
+	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		m := scanner.Text()
 		fn(m)
