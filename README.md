@@ -34,12 +34,12 @@ cd dist && PROG=mtk source ../autocomplete/bash_autocomplete
 ```
 
 # Usage
-Before using the cli you will need to define the working directory of the environment.
+Before using the cli you will need to define the config file for the environment.
 
 You can do this by specifying the `MSPLAT_CONFIG` environment variable or providing a `--config` flag.
 
 ```bash
-$ export MSPLAT_CONFIG=~/Documents/example
+$ export MSPLAT_CONFIG=~/Documents/example/config.yml
 $ mtk --help
 
 NAME:
@@ -51,10 +51,10 @@ COMMANDS:
    projects         tasks for managing projects
    services         tasks for managing services
    stacks           tasks for managing stacks
-   help, h         Shows a list of commands or help for one command
+   help, h          Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --config value  configuration settings for msplat (default: "./config.yml") [$MSPLAT_CONFIG]
+   --config value  configuration settings for msplat (default: "?cwd") [$MSPLAT_CONFIG]
    --help, -h      show help
    --version, -v   print the version
 
