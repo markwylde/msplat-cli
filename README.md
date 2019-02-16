@@ -48,9 +48,9 @@ USAGE:
    mtk [global options] command [command options] [arguments...]
 
 COMMANDS:
-   project         tasks for managing projects
-   service         tasks for managing services
-   stack           tasks for managing stacks
+   projects         tasks for managing projects
+   services         tasks for managing services
+   stacks           tasks for managing stacks
    help, h         Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
