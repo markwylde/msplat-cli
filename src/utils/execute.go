@@ -1,11 +1,35 @@
 package utils
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os/exec"
 )
+
+func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
+	var out []byte
+	buf := make([]byte, 1024, 1024)
+	for {
+		n, err := r.Read(buf[:])
+		if n > 0 {
+			d := buf[:n]
+			out = append(out, d...)
+			_, err := w.Write(d)
+			if err != nil {
+				return out, err
+			}
+		}
+		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
+			return out, err
+		}
+	}
+}
 
 // Execute : run a bash command
 func Execute(command string) string {
@@ -36,4 +60,28 @@ func ExecuteCwd(command string, cwd string) string {
 		log.Fatal(err)
 	}
 	return out.String()
+}
+
+// ExecuteCwdStream : stream a bash command
+func ExecuteCwdStream(command string, cwd string, fn func(stdout string)) (outStr string, errStr string, exitCode error) {
+	cwd = ResolvePath(cwd)
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Dir = cwd
+
+	stdout, _ := cmd.StdoutPipe()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	cmd.Start()
+
+	scanner := bufio.NewScanner(stdout)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		m := scanner.Text()
+		fn(m)
+	}
+
+	err := cmd.Wait()
+
+	return "", stderr.String(), err
 }

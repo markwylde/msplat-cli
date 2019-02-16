@@ -50,6 +50,11 @@ VERSION:
 			Usage:  "configuration settings for msplat",
 			EnvVar: "MSPLAT_CONFIG",
 		},
+
+		cli.BoolFlag{
+			Name:  "verbose",
+			Usage: "display detailed output",
+		},
 	}
 
 	app.Commands = append(app.Commands, commands.CreateProjectCommands()...)
