@@ -23,7 +23,7 @@ func ensureDirectoryExists(path string) {
 func CreateProjectCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "project",
+			Name:  "projects",
 			Usage: "tasks for managing projects",
 			Subcommands: []cli.Command{
 				{
@@ -33,7 +33,8 @@ func CreateProjectCommands() []cli.Command {
 
 						fmt.Println("Cloning projects...")
 
-						stacksPath := viper.GetString("paths.stacks")
+						stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
+
 						ensureDirectoryExists(stacksPath)
 
 						var stacks = viper.GetStringMap("stacks")

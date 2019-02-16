@@ -10,7 +10,7 @@ import (
 func CreateServiceCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "service",
+			Name:  "services",
 			Usage: "tasks for managing services",
 			Subcommands: []cli.Command{
 				{

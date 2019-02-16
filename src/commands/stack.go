@@ -10,7 +10,7 @@ import (
 func CreateStackCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "stack",
+			Name:  "stacks",
 			Usage: "tasks for managing stacks",
 			Subcommands: []cli.Command{
 				{

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -20,6 +22,8 @@ func ReadConfig(config string) {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+
+	viper.SetDefault("paths.stacks", path.Join(filepath.Dir(config), "stacks"))
 
 	viper.ReadConfig(bytes.NewBuffer(configFileData))
 }

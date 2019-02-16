@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"path"
 	"sort"
 
 	"github.com/urfave/cli"
@@ -41,10 +42,11 @@ VERSION:
    {{end}}
 `
 
+	cwd, _ := os.Getwd()
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "config",
-			Value:  "./config.yml",
+			Value:  path.Join(cwd, "config.yml"),
 			Usage:  "configuration settings for msplat",
 			EnvVar: "MSPLAT_CONFIG",
 		},
