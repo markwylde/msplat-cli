@@ -23,12 +23,13 @@ func ensureDirectoryExists(path string) {
 func CreateProjectCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "projects",
-			Usage: "tasks for managing projects",
+			Name:    "projects",
+			Usage:   "Tasks for managing projects",
+			Aliases: []string{"pr"},
 			Subcommands: []cli.Command{
 				{
 					Name:  "clone",
-					Usage: "clone all or some projects",
+					Usage: "Clone all or some projects",
 					Action: func(c *cli.Context) error {
 
 						fmt.Println("Cloning projects...")
@@ -72,7 +73,7 @@ func CreateProjectCommands() []cli.Command {
 				},
 				{
 					Name:  "build",
-					Usage: "build a selection of projects",
+					Usage: "Build a selection of projects",
 					Action: func(c *cli.Context) error {
 						fmt.Println("removed task template: ", c.Args().First())
 						return nil
@@ -80,7 +81,7 @@ func CreateProjectCommands() []cli.Command {
 				},
 				{
 					Name:  "list",
-					Usage: "query or list the projects",
+					Usage: "Query or list the projects",
 					Action: func(c *cli.Context) error {
 						fmt.Println("removed task template: ", c.Args().First())
 						return nil

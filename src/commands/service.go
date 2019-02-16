@@ -10,12 +10,13 @@ import (
 func CreateServiceCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "services",
-			Usage: "tasks for managing services",
+			Name:    "services",
+			Usage:   "Tasks for managing services",
+			Aliases: []string{"sv"},
 			Subcommands: []cli.Command{
 				{
 					Name:  "restart",
-					Usage: "restart a selection of services",
+					Usage: "Restart a selection of services",
 					Action: func(c *cli.Context) error {
 						fmt.Println("new task template: ", c.Args().First())
 						return nil

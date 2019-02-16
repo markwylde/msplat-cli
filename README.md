@@ -48,10 +48,10 @@ USAGE:
    mtk [global options] command [command options] [arguments...]
 
 COMMANDS:
-   projects         tasks for managing projects
-   services         tasks for managing services
-   stacks           tasks for managing stacks
-   help, h          Shows a list of commands or help for one command
+   projects, pr         Tasks for managing projects
+   services, sv         Tasks for managing services
+   stacks, st           Tasks for managing stacks
+   help, h              Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --config value  configuration settings for msplat (default: "?cwd") [$MSPLAT_CONFIG]

@@ -10,12 +10,13 @@ import (
 func CreateStackCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:  "stacks",
-			Usage: "tasks for managing stacks",
+			Name:    "stacks",
+			Usage:   "Tasks for managing stacks",
+			Aliases: []string{"st"},
 			Subcommands: []cli.Command{
 				{
 					Name:  "up",
-					Usage: "bring up a selection of stacks",
+					Usage: "Bring up a selection of stacks",
 					Action: func(c *cli.Context) error {
 						fmt.Println("new task template: ", c.Args().First())
 						return nil
@@ -23,7 +24,7 @@ func CreateStackCommands() []cli.Command {
 				},
 				{
 					Name:  "rm",
-					Usage: "remove a selection of stacks",
+					Usage: "Remove a selection of stacks",
 					Action: func(c *cli.Context) error {
 						fmt.Println("removed task template: ", c.Args().First())
 						return nil
