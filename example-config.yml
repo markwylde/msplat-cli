@@ -1,16 +1,13 @@
 name: Example Configuration
-paths:
-  stacks: /Users/mark/Documents/bumbana/stacks
 stacks:
   gateway:
     configuration:
       url: git@github.com:msplat/gateway-configuration.git
-
     api:
       url: git@github.com:msplat/gateway-api.git
 
     docker-spy:
-      url: git@github.com:msplat/gateway-docker-spy.git
+      url: git@github.com:msplat/docker-spy.git
 
     proxy:
       url: git@github.com:msplat/gateway-proxy.git
@@ -18,6 +15,8 @@ stacks:
   auth:
     configuration:
       url: git@github.com:msplat/auth-configuration.git
+      variables:
+        domain: sso.msplat.test
 
     api:
       url: git@github.com:msplat/auth-api.git
