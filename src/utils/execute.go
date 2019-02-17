@@ -9,6 +9,15 @@ import (
 	"os/exec"
 )
 
+// HandleIoError : Handle errors for functions in this file
+func HandleIoError(stdout string, stderr string, exit error) {
+	if exit != nil {
+		fmt.Printf(stdout)
+		fmt.Printf(stderr)
+		log.Fatalf("exec ended with code %s", exit)
+	}
+}
+
 func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 	var out []byte
 	buf := make([]byte, 1024, 1024)
@@ -45,7 +54,7 @@ func Execute(command string) string {
 }
 
 // ExecuteCwd : run a bash command
-func ExecuteCwd(command string, cwd string) string {
+func ExecuteCwd(command string, cwd string) (stdout string, stderr string, exit error) {
 	cwd = ResolvePath(cwd)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Dir = cwd
@@ -54,12 +63,7 @@ func ExecuteCwd(command string, cwd string) string {
 	cmd.Stdout = &out
 	cmd.Stderr = &outerr
 	err := cmd.Run()
-	if err != nil {
-		fmt.Printf(out.String())
-		fmt.Printf(outerr.String())
-		log.Fatal(err)
-	}
-	return out.String()
+	return out.String(), outerr.String(), err
 }
 
 // ExecuteCwdStream : stream a bash command

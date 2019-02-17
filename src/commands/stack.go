@@ -2,9 +2,88 @@ package commands
 
 import (
 	"fmt"
+	"log"
+	utils "msplat-cli/src/utils"
+	"path"
+	"strings"
 
+	Auroro "github.com/logrusorgru/aurora"
+	"github.com/spf13/viper"
+	"github.com/tidwall/gjson"
 	"github.com/urfave/cli"
 )
+
+func ensureSecretsExist(projectPath string, secrets gjson.Result) {
+	secrets.ForEach(func(key, value gjson.Result) bool {
+		if value.Get("external").Bool() {
+			_, stderr, _ := utils.ExecuteCwd(fmt.Sprintf("printf \"a1b2c3d4e5f6g7h8i9j0\" | docker secret create %s -", key), projectPath)
+
+			if strings.Contains(stderr, "code = AlreadyExists") {
+				fmt.Printf("Secret %s %s\n", key, Auroro.Brown("already exists"))
+			} else {
+				fmt.Printf("Secret %s %s\n", key, Auroro.Green("was created"))
+			}
+		}
+		return true // keep iterating
+	})
+}
+
+func ensureNetworksExist(projectPath string, networks gjson.Result) {
+	networks.ForEach(func(key, value gjson.Result) bool {
+		if value.Get("external").Bool() {
+			name := value.Get("name")
+			_, stderr, _ := utils.ExecuteCwd(fmt.Sprintf("docker network create %s --scope swarm --driver overlay --attachable", name), projectPath)
+
+			if strings.Contains(stderr, "already exists") {
+				fmt.Printf("Network %s (%s) %s\n", name, key, Auroro.Brown("already exists"))
+			} else {
+				fmt.Printf("Network %s (%s) %s\n", name, key, Auroro.Green("was created"))
+			}
+		}
+		return true // keep iterating
+	})
+}
+
+func prepareStack(projectPath string) {
+	composeFile := path.Join(projectPath, "docker-compose.yml")
+	json, _ := utils.ReadYAMLFileAsJSON(composeFile)
+
+	secrets := gjson.Get(json, "secrets")
+	ensureSecretsExist(projectPath, secrets)
+
+	networks := gjson.Get(json, "networks")
+	ensureNetworksExist(projectPath, networks)
+}
+
+func stacksUp(c *cli.Context) error {
+	fmt.Println("Starting stacks...")
+
+	stacks := viper.GetStringMap("stacks")
+	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
+
+	for stackKey := range stacks {
+		projectKey := "configuration"
+		environment := "development"
+		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+
+		fmt.Printf("Starting %s\n", Auroro.Cyan(stackKey))
+		prepareStack(projectPath)
+		_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack deploy %s -c docker-compose.yml", stackKey), projectPath, func(stdout string) {
+			if c.GlobalBool("verbose") {
+				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+			}
+		})
+
+		if err != nil {
+			log.Fatalf("Stacks up error:\n%s", stderr)
+		}
+
+		fmt.Printf("\n")
+	}
+	fmt.Printf("%s\nEverything is complete.\n", Auroro.Green("Images built successfully"))
+
+	return nil
+}
 
 // CreateStackCommands : Creates a command for "add"
 func CreateStackCommands() []cli.Command {
@@ -15,12 +94,9 @@ func CreateStackCommands() []cli.Command {
 			Aliases: []string{"st"},
 			Subcommands: []cli.Command{
 				{
-					Name:  "up",
-					Usage: "Bring up a selection of stacks",
-					Action: func(c *cli.Context) error {
-						fmt.Println("new task template: ", c.Args().First())
-						return nil
-					},
+					Name:   "up",
+					Usage:  "Bring up a selection of stacks",
+					Action: stacksUp,
 				},
 				{
 					Name:  "rm",

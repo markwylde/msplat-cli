@@ -16,19 +16,13 @@ import (
 	utils "msplat-cli/src/utils"
 )
 
-func ensureDirectoryExists(path string) {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.Mkdir(path, os.ModePerm)
-	}
-}
-
 func cloneProjects(c *cli.Context) error {
 	fmt.Println("Cloning projects...")
 
 	stacks := viper.GetStringMap("stacks")
 	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
 
-	ensureDirectoryExists(stacksPath)
+	utils.EnsureDirectoryExists(stacksPath)
 
 	for stackKey := range stacks {
 		var projects = viper.GetStringMap("stacks." + stackKey)
@@ -39,19 +33,22 @@ func cloneProjects(c *cli.Context) error {
 			stackPath := path.Join(stacksPath, stackKey)
 			projectPath := path.Join(stacksPath, stackKey, projectKey)
 
-			ensureDirectoryExists(stackPath)
+			utils.EnsureDirectoryExists(stackPath)
 
 			if _, err := os.Stat(projectPath); !os.IsNotExist(err) {
-				gitStatus := utils.ExecuteCwd("git status", projectPath)
-				if strings.Contains(gitStatus, "Your branch is up to date") {
-					gitStatus = fmt.Sprintf("%s %s", "and is", Auroro.Green("up to date"))
+				stdout, stderr, err := utils.ExecuteCwd("git status", projectPath)
+				utils.HandleIoError(stdout, stderr, err)
+
+				if strings.Contains(stdout, "Your branch is up to date") {
+					stdout = fmt.Sprintf("%s %s", "and is", Auroro.Green("up to date"))
 				} else {
-					gitStatus = fmt.Sprintf("%s %s", "but is", Auroro.Red("not up to date"))
+					stdout = fmt.Sprintf("%s %s", "but is", Auroro.Red("not up to date"))
 				}
 
-				fmt.Printf("  %s %s, %s. Skipping clone.\n", projectKey, Auroro.Brown("already exists"), gitStatus)
+				fmt.Printf("  %s %s, %s. Skipping clone.\n", projectKey, Auroro.Brown("already exists"), stdout)
 			} else {
-				utils.ExecuteCwd(fmt.Sprintf("git clone %s %s", project["url"], projectKey), stackPath)
+				stdout, stderr, err := utils.ExecuteCwd(fmt.Sprintf("git clone %s %s", project["url"], projectKey), stackPath)
+				utils.HandleIoError(stdout, stderr, err)
 				fmt.Printf("  %s %s.\n", projectKey, Auroro.Green("successfully cloned"))
 			}
 		}

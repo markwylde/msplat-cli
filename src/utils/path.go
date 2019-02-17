@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -19,4 +20,11 @@ func ResolvePath(path string) string {
 		path = filepath.Join(dir, path[2:])
 	}
 	return path
+}
+
+// EnsureDirectoryExists : Create a directory if it doesn't already exist
+func EnsureDirectoryExists(path string) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, os.ModePerm)
+	}
 }
