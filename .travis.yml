@@ -6,7 +6,13 @@ env:
   - GO111MODULE=on
 install: true
 script:
-  - go build -o dist/mtk -ldflags="-s -w" -i ./src/*.go
-after_success:
-  - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
-  - ghr --username msplat --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
+  - go build -o mtk.linux.amd64 -ldflags="-s -w" -i ./src/*.go
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GITHUB_TOKEN
+  file:
+    - mtk.linux.amd64
+  on:
+    repo: msplat/msplat-cli
+    tags: true

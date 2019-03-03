@@ -14,6 +14,8 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
 	github.com/mattn/go-colorable v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/mitchellh/gox v0.4.0 // indirect
+	github.com/mitchellh/iochan v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spf13/viper v1.3.1
