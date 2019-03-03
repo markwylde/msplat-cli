@@ -2,16 +2,24 @@ language: go
 go:
   - master
 env:
-  - "PATH=/home/travis/gopath/bin:$PATH" GO111MODULE=on
+  - GO111MODULE=on
 install: true
 script:
-  - go build -o mtk.linux.amd64 -ldflags="-s -w" -i ./src/*.go
+  - env GOOS=linux GOARCH=amd64 go build -o mtk-$TRAVIS_TAG-linux-amd64 -ldflags="-s -w" -i ./src/*.go
+  - env GOOS=linux GOARCH=arm64 go build -o mtk-$TRAVIS_TAG-linux-arm64 -ldflags="-s -w" -i ./src/*.go
+  - env GOOS=linux GOARCH=arm go build -o mtk-$TRAVIS_TAG-linux-arm -ldflags="-s -w" -i ./src/*.go
+  - env GOOS=darwin GOARCH=amd64 go build -o mtk-$TRAVIS_TAG-darwin-amd64 -ldflags="-s -w" -i ./src/*.go
+  - env GOOS=windows GOARCH=amd64 go build -o mtk-$TRAVIS_TAG-windows-amd64.exe -ldflags="-s -w" -i ./src/*.go
 deploy:
   provider: releases
   skip_cleanup: true
   api_key: $GITHUB_TOKEN
   file:
-    - mtk.linux.amd64
+    - mtk-$TRAVIS_TAG-linux-amd64
+    - mtk-$TRAVIS_TAG-linux-arm64
+    - mtk-$TRAVIS_TAG-linux-arm
+    - mtk-$TRAVIS_TAG-darwin-amd64
+    - mtk-$TRAVIS_TAG-windows-amd64.exe
   on:
     repo: msplat/msplat-cli
     tags: true
