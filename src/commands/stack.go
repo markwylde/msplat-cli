@@ -13,46 +13,50 @@ import (
 	"github.com/urfave/cli"
 )
 
-func ensureSecretsExist(projectPath string, secrets gjson.Result) {
+func ensureSecretsExist(projectPath string, secrets gjson.Result, verbose bool) {
 	secrets.ForEach(func(key, value gjson.Result) bool {
 		if value.Get("external").Bool() {
 			_, stderr, _ := utils.ExecuteCwd(fmt.Sprintf("printf \"a1b2c3d4e5f6g7h8i9j0\" | docker secret create %s -", key), projectPath)
 
 			if strings.Contains(stderr, "code = AlreadyExists") {
-				fmt.Printf("Secret %s %s\n", key, Auroro.Brown("already exists"))
+				if verbose {
+					fmt.Printf("    Secret %s %s\n", key, Auroro.Brown("already exists"))
+				}
 			} else {
-				fmt.Printf("Secret %s %s\n", key, Auroro.Green("was created"))
+				fmt.Printf("    Secret %s %s\n", key, Auroro.Green("was created"))
 			}
 		}
 		return true // keep iterating
 	})
 }
 
-func ensureNetworksExist(projectPath string, networks gjson.Result) {
+func ensureNetworksExist(projectPath string, networks gjson.Result, verbose bool) {
 	networks.ForEach(func(key, value gjson.Result) bool {
 		if value.Get("external").Bool() {
 			name := value.Get("name")
 			_, stderr, _ := utils.ExecuteCwd(fmt.Sprintf("docker network create %s --scope swarm --driver overlay --attachable", name), projectPath)
 
 			if strings.Contains(stderr, "already exists") {
-				fmt.Printf("Network %s (%s) %s\n", name, key, Auroro.Brown("already exists"))
+				if verbose {
+					fmt.Printf("    Network %s (%s) %s\n", name, key, Auroro.Brown("already exists"))
+				}
 			} else {
-				fmt.Printf("Network %s (%s) %s\n", name, key, Auroro.Green("was created"))
+				fmt.Printf("    Network %s (%s) %s\n", name, key, Auroro.Green("was created"))
 			}
 		}
 		return true // keep iterating
 	})
 }
 
-func prepareStack(projectPath string) {
+func prepareStack(projectPath string, verbose bool) {
 	composeFile := path.Join(projectPath, "docker-compose.yml")
 	json, _ := utils.ReadYAMLFileAsJSON(composeFile)
 
 	secrets := gjson.Get(json, "secrets")
-	ensureSecretsExist(projectPath, secrets)
+	ensureSecretsExist(projectPath, secrets, verbose)
 
 	networks := gjson.Get(json, "networks")
-	ensureNetworksExist(projectPath, networks)
+	ensureNetworksExist(projectPath, networks, verbose)
 }
 
 func stacksUp(c *cli.Context) error {
@@ -66,8 +70,8 @@ func stacksUp(c *cli.Context) error {
 		environment := "development"
 		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
 
-		fmt.Printf("Starting %s\n", Auroro.Cyan(stackKey))
-		prepareStack(projectPath)
+		fmt.Printf("  Starting %s\n", Auroro.Cyan(stackKey))
+		prepareStack(projectPath, c.GlobalBool("verbose"))
 
 		envVars := viper.GetStringMapString(fmt.Sprintf("stacks.%s.configuration.variables", stackKey))
 
@@ -84,7 +88,37 @@ func stacksUp(c *cli.Context) error {
 
 		fmt.Printf("\n")
 	}
-	fmt.Printf("%s\nEverything is complete.\n", Auroro.Green("Images built successfully"))
+	fmt.Println(Auroro.Green("Stacks brought up successfully"))
+
+	return nil
+}
+
+func stacksRm(c *cli.Context) error {
+	fmt.Println("Removing stacks...")
+
+	stacks := viper.GetStringMap("stacks")
+	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
+
+	for stackKey := range stacks {
+		projectKey := "configuration"
+		environment := "development"
+		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+
+		fmt.Printf("  Stopping %s\n", Auroro.Cyan(stackKey))
+
+		_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack rm %s", stackKey), projectPath, func(stdout string) {
+			if c.GlobalBool("verbose") {
+				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+			}
+		})
+
+
+		if err != nil {
+			log.Fatalf("Stacks rm error:\n%s", stderr)
+		}
+	}
+	fmt.Printf("\n")
+	fmt.Println(Auroro.Green("Stacks removed successfully"))
 
 	return nil
 }
@@ -105,10 +139,7 @@ func CreateStackCommands() []cli.Command {
 				{
 					Name:  "rm",
 					Usage: "Remove a selection of stacks",
-					Action: func(c *cli.Context) error {
-						fmt.Println("removed task template: ", c.Args().First())
-						return nil
-					},
+					Action: stacksRm,
 				},
 			},
 		},
