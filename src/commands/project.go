@@ -58,9 +58,11 @@ func cloneProjects(c *cli.Context) error {
 	return nil
 }
 
-func buildOnMachine(wg *sync.WaitGroup, bright bool, ip string, id string, projectPath string, verbose bool) {
-	fmt.Printf("  Executing %s on machine %s\n", Auroro.Cyan("docker-compose build"), ip)
-	_, errText, err := utils.ExecuteCwdStream(fmt.Sprintf("DOCKER_HOST=tcp://%s:2376 docker-compose build", ip), projectPath, func(stdout string) {
+func buildOnMachine(wg *sync.WaitGroup, bright bool, ip string, id string, machineName string, projectPath string, verbose bool) {
+	fmt.Printf("  Executing %s on machine %s (%s)\n", Auroro.Cyan("docker-compose build"), Auroro.Cyan(machineName), ip)
+	cmd := fmt.Sprintf("eval `docker-machine env %s` && docker-compose build", machineName)
+
+	_, errText, err := utils.ExecuteCwdStream(cmd, projectPath, func(stdout string) {
 		if !verbose {
 			if strings.HasPrefix(stdout, "Successfully tagged ") {
 				fmt.Printf("  Successfully built %s on machine %s\n", Auroro.Green(strings.TrimPrefix(stdout, "Successfully tagged ")), Auroro.Green(ip))
@@ -104,11 +106,12 @@ func buildProjects(c *cli.Context) error {
 		for i, machine := range machines {
 			machineIP := machine.Get("Status.Addr").String()
 			machineID := machine.Get("ID").String()
+			machineName := machine.Get("Description.Hostname").String()
 
 			if i == 0 {
-				go buildOnMachine(&wg, true, machineIP, machineID, projectPath, c.GlobalBool("verbose"))
+				go buildOnMachine(&wg, true, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
 			} else {
-				go buildOnMachine(&wg, false, machineIP, machineID, projectPath, c.GlobalBool("verbose"))
+				go buildOnMachine(&wg, false, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
 			}
 		}
 		wg.Wait()

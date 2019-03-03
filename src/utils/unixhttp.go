@@ -7,13 +7,18 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path/filepath"
+	"os"
+	"strings"
 )
 
 // UnixGet : Perform a get request an return the body
 func UnixGet(url string) (string, error) {
-	certFile := "/Users/mark/.docker/machine/machines/example-1/cert.pem"
-	keyFile := "/Users/mark/.docker/machine/machines/example-1/key.pem"
-	caFile := "/Users/mark/.docker/machine/machines/example-1/ca.pem"
+	machinePath := filepath.Join(os.Getenv("DOCKER_CERT_PATH"))
+	machineIp := strings.Trim(os.Getenv("DOCKER_HOST"), "tcp://")
+	certFile := filepath.Join(machinePath, "cert.pem")
+	keyFile := filepath.Join(machinePath, "key.pem")
+	caFile := filepath.Join(machinePath, "ca.pem")
 
 	// Load client cert
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
@@ -39,7 +44,7 @@ func UnixGet(url string) (string, error) {
 	client := &http.Client{Transport: transport}
 
 	// Do GET something
-	resp, err := client.Get(fmt.Sprintf("https://192.168.99.105:2376/%s", url))
+	resp, err := client.Get(fmt.Sprintf("https://%s/%s", machineIp, url))
 	if err != nil {
 		return "", err
 	}
