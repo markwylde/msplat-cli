@@ -11,7 +11,20 @@ The wiki has some tutorials and getting started guides for creating your first m
 - [Create a new Production Environment](https://github.com/msplat/msplat-cli/wiki/Create-a-production-environment)
 - [...more tutorials](https://github.com/msplat/msplat-cli/wiki)
 
+# Install
+You can install a prebuilt binary to use on several platforms.
+
+The below code will work on a linux (amd64) machine.
+
+```bash
+curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.1/mtk-v0.0.1-linux-amd64 --output mtk
+sudo cp mtk /usr/local/bin/mtk
+chmod +x /usr/local/bin/mtk
+```
+
 # Build
+Alternatively you can build the binary yourself from source.
+
 You will need go version 1.11.4 or higher, as this project uses go modules.
 
 To build you can execute the `build.sh` file in the root of the project:
