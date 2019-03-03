@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Information about installing from release
 
+### Changed
+- Changed the order of the readme file
+
 ## [0.0.1] - 2019-03-03
 ### Changed
 - Initial release
