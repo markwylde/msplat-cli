@@ -57,7 +57,7 @@ func UnixGet(url string) (string, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("unixget: request returned %d when expected 200", resp.StatusCode)
+		return "", fmt.Errorf("unixget: request returned %d when expected 200\n%s", resp.StatusCode, data)
 	}
 
 	return string(data), err
