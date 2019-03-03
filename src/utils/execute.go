@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"os"
 )
 
 // HandleIoError : Handle errors for functions in this file
@@ -71,6 +72,35 @@ func ExecuteCwdStream(command string, cwd string, fn func(stdout string)) (outSt
 	cwd = ResolvePath(cwd)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Dir = cwd
+
+	stdout, _ := cmd.StdoutPipe()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	cmd.Start()
+
+	scanner := bufio.NewScanner(stdout)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		m := scanner.Text()
+		fn(m)
+	}
+
+	err := cmd.Wait()
+
+	return "", stderr.String(), err
+}
+
+// ExecuteCwdStreamWithEnv : stream a bash command
+func ExecuteCwdStreamWithEnv(command string, cwd string, envVars map[string]string, fn func(stdout string)) (outStr string, errStr string, exitCode error) {
+	cwd = ResolvePath(cwd)
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Dir = cwd
+
+	cmd.Env = os.Environ()
+	for envKey, envVal := range envVars {
+	    cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", envKey, envVal))
+	}
 
 	stdout, _ := cmd.StdoutPipe()
 	var stderr bytes.Buffer

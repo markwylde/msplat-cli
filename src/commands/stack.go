@@ -68,11 +68,15 @@ func stacksUp(c *cli.Context) error {
 
 		fmt.Printf("Starting %s\n", Auroro.Cyan(stackKey))
 		prepareStack(projectPath)
-		_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack deploy %s -c docker-compose.yml", stackKey), projectPath, func(stdout string) {
+
+		envVars := viper.GetStringMapString(fmt.Sprintf("stacks.%s.configuration.variables", stackKey))
+
+		_, stderr, err := utils.ExecuteCwdStreamWithEnv(fmt.Sprintf("docker stack deploy %s -c docker-compose.yml", stackKey), projectPath, envVars, func(stdout string) {
 			if c.GlobalBool("verbose") {
 				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
 			}
 		})
+
 
 		if err != nil {
 			log.Fatalf("Stacks up error:\n%s", stderr)
