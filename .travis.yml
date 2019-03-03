@@ -3,8 +3,9 @@ go:
   - master
 env:
   - "PATH=/home/travis/gopath/bin:$PATH"
+  - GO111MODULE=on
 script:
-  - env GO111MODULE=on go build -o dist/mtk -ldflags="-s -w" -i ./src/*.go
+  - go build -o dist/mtk -ldflags="-s -w" -i ./src/*.go
 after_success:
   - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
   - ghr --username msplat --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
