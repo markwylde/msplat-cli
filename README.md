@@ -19,7 +19,7 @@ The below code will work on a linux (amd64) machine.
 ```bash
 curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.1/mtk-v0.0.1-linux-amd64 --output mtk
 sudo cp mtk /usr/local/bin/mtk
-chmod +x /usr/local/bin/mtk
+sudo chmod +x /usr/local/bin/mtk
 ```
 
 # Build
