@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	app := cli.NewApp()
+         	app := cli.NewApp()
 
 	app.Name = "msplat toolkit"
 	app.Description = "A cli for managing msplat environments"

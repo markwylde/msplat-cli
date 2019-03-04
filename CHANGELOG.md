@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Changed the order of the readme file
+- Lint with gofmt
 
 ## [0.0.1] - 2019-03-03
 ### Changed
