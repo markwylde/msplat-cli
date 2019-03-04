@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Information about installing from release
+- Added linting guideline to readme for contributors
 
 ### Changed
 - Changed the order of the readme file
