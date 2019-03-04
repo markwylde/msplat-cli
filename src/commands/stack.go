@@ -81,7 +81,6 @@ func stacksUp(c *cli.Context) error {
 			}
 		})
 
-
 		if err != nil {
 			log.Fatalf("Stacks up error:\n%s", stderr)
 		}
@@ -112,7 +111,6 @@ func stacksRm(c *cli.Context) error {
 			}
 		})
 
-
 		if err != nil {
 			log.Fatalf("Stacks rm error:\n%s", stderr)
 		}
@@ -137,8 +135,8 @@ func CreateStackCommands() []cli.Command {
 					Action: stacksUp,
 				},
 				{
-					Name:  "rm",
-					Usage: "Remove a selection of stacks",
+					Name:   "rm",
+					Usage:  "Remove a selection of stacks",
 					Action: stacksRm,
 				},
 			},

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os/exec"
 	"os"
+	"os/exec"
 )
 
 // HandleIoError : Handle errors for functions in this file
@@ -99,7 +99,7 @@ func ExecuteCwdStreamWithEnv(command string, cwd string, envVars map[string]stri
 
 	cmd.Env = os.Environ()
 	for envKey, envVal := range envVars {
-	    cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", envKey, envVal))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", envKey, envVal))
 	}
 
 	stdout, _ := cmd.StdoutPipe()
