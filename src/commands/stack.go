@@ -59,7 +59,7 @@ func prepareStack(projectPath string, verbose bool) {
 	ensureNetworksExist(projectPath, networks, verbose)
 }
 
-func removeStackContainers (stack string) {
+func removeStackContainers(stack string) {
 	fmt.Println("  Cleaning old containers:", stack)
 
 	url := fmt.Sprintf(`/v1.24/containers/json?filters={"label":["com.docker.stack.namespace=%s"]}`, stack)
