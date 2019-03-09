@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Information about installing from release
 - Added linting guideline to readme for contributors
+- Remove old containers on stacks rm
 
 ### Changed
 - Changed the order of the readme file
