@@ -5,6 +5,7 @@ env:
   - GO111MODULE=on
 install: true
 script:
+  - test -z $(gofmt -l .)
   - env GOOS=linux GOARCH=amd64 go build -o mtk-$TRAVIS_TAG-linux-amd64 -ldflags="-s -w" -i ./src/*.go
   - env GOOS=linux GOARCH=arm64 go build -o mtk-$TRAVIS_TAG-linux-arm64 -ldflags="-s -w" -i ./src/*.go
   - env GOOS=linux GOARCH=arm go build -o mtk-$TRAVIS_TAG-linux-arm -ldflags="-s -w" -i ./src/*.go

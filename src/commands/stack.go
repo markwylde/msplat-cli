@@ -59,6 +59,32 @@ func prepareStack(projectPath string, verbose bool) {
 	ensureNetworksExist(projectPath, networks, verbose)
 }
 
+func removeStackContainers(stack string) {
+	fmt.Println("  Cleaning old containers:", stack)
+
+	url := fmt.Sprintf(`/v1.24/containers/json?filters={"label":["com.docker.stack.namespace=%s"]}`, stack)
+
+	resp, err := utils.UnixGet(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	containers := gjson.Parse(resp).Array()
+
+	if len(containers) == 0 {
+		fmt.Println("    No containers found")
+	}
+
+	for _, container := range containers {
+		containerId := container.Get("Id")
+
+		fmt.Printf("    Removing %s\n", Auroro.Cyan(containerId))
+		cmd := fmt.Sprintf("docker rm -f %s\n", containerId)
+		stdout, stderr, err := utils.ExecuteCwd(cmd, "")
+		utils.HandleIoError(stdout, stderr, err)
+	}
+}
+
 func stacksUp(c *cli.Context) error {
 	fmt.Println("Starting stacks...")
 
@@ -80,7 +106,6 @@ func stacksUp(c *cli.Context) error {
 				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
 			}
 		})
-
 
 		if err != nil {
 			log.Fatalf("Stacks up error:\n%s", stderr)
@@ -104,7 +129,7 @@ func stacksRm(c *cli.Context) error {
 		environment := "development"
 		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
 
-		fmt.Printf("  Stopping %s\n", Auroro.Cyan(stackKey))
+		fmt.Printf("  Stopping stack %s\n", Auroro.Cyan(stackKey))
 
 		_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack rm %s", stackKey), projectPath, func(stdout string) {
 			if c.GlobalBool("verbose") {
@@ -112,10 +137,10 @@ func stacksRm(c *cli.Context) error {
 			}
 		})
 
-
 		if err != nil {
 			log.Fatalf("Stacks rm error:\n%s", stderr)
 		}
+		removeStackContainers(stackKey)
 	}
 	fmt.Printf("\n")
 	fmt.Println(Auroro.Green("Stacks removed successfully"))
@@ -137,8 +162,8 @@ func CreateStackCommands() []cli.Command {
 					Action: stacksUp,
 				},
 				{
-					Name:  "rm",
-					Usage: "Remove a selection of stacks",
+					Name:   "rm",
+					Usage:  "Remove a selection of stacks",
 					Action: stacksRm,
 				},
 			},

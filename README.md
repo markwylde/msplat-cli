@@ -17,7 +17,7 @@ You can install a prebuilt binary to use on several platforms.
 The below code will work on a linux (amd64) machine.
 
 ```bash
-curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.1/mtk-v0.0.1-linux-amd64 --output mtk
+curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.2/mtk-v0.0.2-linux-amd64 --output mtk
 sudo cp mtk /usr/local/bin/mtk
 sudo chmod +x /usr/local/bin/mtk
 ```
@@ -48,7 +48,7 @@ GLOBAL OPTIONS:
    --version, -v   print the version
 
 VERSION:
-   0.0.1
+   0.0.2
 ```
 
 ## Autocomplete
@@ -75,6 +75,13 @@ To build you can execute the `build.sh` file in the root of the project:
 This will produce a binary at `dist/mtk` which can be installed globally:
 ```bash
 sudo ln -s `pwd`/dist/mtk /usr/local/bin/mtk
+```
+
+# Contributing
+## Linting code
+Make sure your code is following the official go formatting guidelines by running the command below. The tests will fail if there are outstanding formatting errors.
+```bash
+gofmt -w .
 ```
 
 # License

@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os/exec"
 	"os"
+	"os/exec"
+	"time"
+
+	"github.com/markwylde/cmd"
 )
 
 // HandleIoError : Handle errors for functions in this file
@@ -39,6 +42,35 @@ func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 			return out, err
 		}
 	}
+}
+
+// ExecuteStream : run a bash command and stream output
+func ExecuteStream(command string, cwd string, fn func(stdout string, stderr string)) (commandExe *cmd.Cmd) {
+	cmdOptions := cmd.Options{
+		Buffered:  false,
+		Streaming: true,
+	}
+
+	exeCmd := cmd.NewCmdOptions(cmdOptions, "bash", "-c", command)
+
+	go func() {
+		for {
+			select {
+			case line := <-exeCmd.Stdout:
+				fn(line, "")
+			case line := <-exeCmd.Stderr:
+				fn("", line)
+			}
+		}
+	}()
+
+	<-exeCmd.Start()
+
+	for len(exeCmd.Stdout) > 0 || len(exeCmd.Stderr) > 0 {
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	return exeCmd
 }
 
 // Execute : run a bash command
@@ -99,7 +131,7 @@ func ExecuteCwdStreamWithEnv(command string, cwd string, envVars map[string]stri
 
 	cmd.Env = os.Environ()
 	for envKey, envVal := range envVars {
-	    cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", envKey, envVal))
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", envKey, envVal))
 	}
 
 	stdout, _ := cmd.StdoutPipe()
