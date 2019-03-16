@@ -8,6 +8,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/ghodss/yaml v1.0.0
+	github.com/go-cmd/cmd v1.0.4
 	github.com/google/pprof v0.0.0-20190208070709-b421f19a5c07 // indirect
 	github.com/gosuri/uilive v0.0.0-20170323041506-ac356e6e42cd
 	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect

@@ -55,13 +55,14 @@ func CreateServiceCommands() []cli.Command {
 					Usage: "Output the logs for a service",
 					Action: func(c *cli.Context) error {
 						cmd := fmt.Sprintf("docker service logs -f %s", c.Args().First())
-						_, errText, err := utils.ExecuteCwdStream(cmd, "", func(stdout string) {
-							fmt.Println(stdout)
+						utils.ExecuteStream(cmd, "", func(stdout string, stderr string) {
+							if stdout != "" {
+								fmt.Println(stdout)
+							}
+							if stderr != "" {
+								fmt.Println(stderr)
+							}
 						})
-
-						if err != nil {
-							log.Fatalf("Error %i: %s", err, errText)
-						}
 
 						return nil
 					},
