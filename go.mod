@@ -13,6 +13,7 @@ require (
 	github.com/gosuri/uilive v0.0.0-20170323041506-ac356e6e42cd
 	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
+	github.com/markwylde/cmd v1.0.4-0.20190316202519-ba97f6f7c776
 	github.com/mattn/go-colorable v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mitchellh/gox v0.4.0 // indirect

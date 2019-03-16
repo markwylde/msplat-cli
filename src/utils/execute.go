@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/go-cmd/cmd"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"time"
+
+	"github.com/markwylde/cmd"
 )
 
 // HandleIoError : Handle errors for functions in this file
