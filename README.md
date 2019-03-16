@@ -1,6 +1,6 @@
 ![msplat logo](https://raw.githubusercontent.com/msplat/branding/master/msplat-logo-nameonly-sm.png)
 
-[![Build Status](https://travis-ci.org/msplat/msplat-cli.svg?branch=v0.0.2-wip)](https://travis-ci.org/msplat/msplat-cli)
+[![Build Status](https://travis-ci.org/msplat/msplat-cli.svg?branch=master)](https://travis-ci.org/msplat/msplat-cli)
 
 The msplat cli is a command line interface for managing a microservices platform using the msplat concept. This project is very new and hasn't even reached it's alpha version.
 
