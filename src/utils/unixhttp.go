@@ -15,7 +15,7 @@ import (
 // UnixGet : Perform a get request an return the body
 func UnixGet(url string) (string, error) {
 	machinePath := filepath.Join(os.Getenv("DOCKER_CERT_PATH"))
-	machineIp := strings.Trim(os.Getenv("DOCKER_HOST"), "tcp://")
+	machineIP := strings.Trim(os.Getenv("DOCKER_HOST"), "tcp://")
 	certFile := filepath.Join(machinePath, "cert.pem")
 	keyFile := filepath.Join(machinePath, "key.pem")
 	caFile := filepath.Join(machinePath, "ca.pem")
@@ -44,7 +44,7 @@ func UnixGet(url string) (string, error) {
 	client := &http.Client{Transport: transport}
 
 	// Do GET something
-	resp, err := client.Get(fmt.Sprintf("https://%s/%s", machineIp, url))
+	resp, err := client.Get(fmt.Sprintf("https://%s/%s", machineIP, url))
 	if err != nil {
 		return "", err
 	}
