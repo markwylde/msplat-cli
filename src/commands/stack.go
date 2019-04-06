@@ -76,10 +76,10 @@ func removeStackContainers(stack string) {
 	}
 
 	for _, container := range containers {
-		containerId := container.Get("Id")
+		containerID := container.Get("Id")
 
-		fmt.Printf("    Removing %s\n", Auroro.Cyan(containerId))
-		cmd := fmt.Sprintf("docker rm -f %s\n", containerId)
+		fmt.Printf("    Removing %s\n", Auroro.Cyan(containerID))
+		cmd := fmt.Sprintf("docker rm -f %s\n", containerID)
 		stdout, stderr, err := utils.ExecuteCwd(cmd, "")
 		utils.HandleIoError(stdout, stderr, err)
 	}
