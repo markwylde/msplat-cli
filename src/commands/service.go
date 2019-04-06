@@ -4,11 +4,24 @@ import (
 	"fmt"
 	"log"
 
+	utils "msplat-cli/src/utils"
+
 	Auroro "github.com/logrusorgru/aurora"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli"
-	utils "msplat-cli/src/utils"
 )
+
+func outputLogsByService(serviceName string) {
+	cmd := fmt.Sprintf("docker service logs -f %s", serviceName)
+	utils.ExecuteStream(cmd, "", func(stdout string, stderr string) {
+		if stdout != "" {
+			fmt.Println(stdout)
+		}
+		if stderr != "" {
+			fmt.Println(stderr)
+		}
+	})
+}
 
 // CreateServiceCommands : Creates a command for "add"
 func CreateServiceCommands() []cli.Command {
@@ -21,6 +34,9 @@ func CreateServiceCommands() []cli.Command {
 				{
 					Name:  "restart",
 					Usage: "Restart a selection of services",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "logs"},
+					},
 					Action: func(c *cli.Context) error {
 						fmt.Println("Searching for containers:", c.Args().First())
 
@@ -38,12 +54,16 @@ func CreateServiceCommands() []cli.Command {
 						}
 
 						for _, container := range containers {
-							containerId := container.Get("Id")
+							containerID := container.Get("Id")
 
-							fmt.Printf("  Restarting %s\n", Auroro.Cyan(containerId))
-							cmd := fmt.Sprintf("docker rm -f %s\n", containerId)
+							fmt.Printf("  Restarting %s\n", Auroro.Cyan(containerID))
+							cmd := fmt.Sprintf("docker rm -f %s\n", containerID)
 							stdout, stderr, err := utils.ExecuteCwd(cmd, "")
 							utils.HandleIoError(stdout, stderr, err)
+						}
+
+						if c.Bool("logs") {
+							outputLogsByService(c.Args().First())
 						}
 
 						return nil
@@ -54,15 +74,7 @@ func CreateServiceCommands() []cli.Command {
 					Name:  "logs",
 					Usage: "Output the logs for a service",
 					Action: func(c *cli.Context) error {
-						cmd := fmt.Sprintf("docker service logs -f %s", c.Args().First())
-						utils.ExecuteStream(cmd, "", func(stdout string, stderr string) {
-							if stdout != "" {
-								fmt.Println(stdout)
-							}
-							if stderr != "" {
-								fmt.Println(stderr)
-							}
-						})
+						outputLogsByService(c.Args().First())
 
 						return nil
 					},
