@@ -152,6 +152,7 @@ func stacksRm(c *cli.Context) error {
 				removeStackContainers(stackKey)
 			}
 		}
+		removeStackContainers(stackKey)
 	}
 	fmt.Printf("\n")
 	fmt.Println(Auroro.Green("Stacks removed successfully"))
