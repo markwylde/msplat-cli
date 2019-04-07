@@ -76,10 +76,10 @@ func removeStackContainers(stack string) {
 	}
 
 	for _, container := range containers {
-		containerId := container.Get("Id")
+		containerID := container.Get("Id")
 
-		fmt.Printf("    Removing %s\n", Auroro.Cyan(containerId))
-		cmd := fmt.Sprintf("docker rm -f %s\n", containerId)
+		fmt.Printf("    Removing %s\n", Auroro.Cyan(containerID))
+		cmd := fmt.Sprintf("docker rm -f %s\n", containerID)
 		stdout, stderr, err := utils.ExecuteCwd(cmd, "")
 		utils.HandleIoError(stdout, stderr, err)
 	}
@@ -92,26 +92,30 @@ func stacksUp(c *cli.Context) error {
 	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
 
 	for stackKey := range stacks {
-		projectKey := "configuration"
-		environment := "development"
-		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+		projects := viper.GetStringMap("stacks." + stackKey)
 
-		fmt.Printf("  Starting %s\n", Auroro.Cyan(stackKey))
-		prepareStack(projectPath, c.GlobalBool("verbose"))
+		for projectKey := range projects {
+			compose := viper.GetBool("stacks." + stackKey + "." + projectKey + ".compose")
+			if compose {
+				environment := "development"
+				projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
 
-		envVars := viper.GetStringMapString(fmt.Sprintf("stacks.%s.configuration.variables", stackKey))
+				fmt.Printf("  Starting %s->%s\n", Auroro.Cyan(stackKey), projectKey)
+				prepareStack(projectPath, c.GlobalBool("verbose"))
 
-		_, stderr, err := utils.ExecuteCwdStreamWithEnv(fmt.Sprintf("docker stack deploy %s -c docker-compose.yml", stackKey), projectPath, envVars, func(stdout string) {
-			if c.GlobalBool("verbose") {
-				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+				envVars := viper.GetStringMapString(fmt.Sprintf("stacks.%s.configuration.variables", stackKey))
+
+				_, stderr, err := utils.ExecuteCwdStreamWithEnv(fmt.Sprintf("docker stack deploy %s -c docker-compose.yml", stackKey), projectPath, envVars, func(stdout string) {
+					if c.GlobalBool("verbose") {
+						fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+					}
+				})
+
+				if err != nil {
+					log.Fatalf("Stacks up error:\n%s", stderr)
+				}
 			}
-		})
-
-		if err != nil {
-			log.Fatalf("Stacks up error:\n%s", stderr)
 		}
-
-		fmt.Printf("\n")
 	}
 	fmt.Println(Auroro.Green("Stacks brought up successfully"))
 
@@ -125,20 +129,28 @@ func stacksRm(c *cli.Context) error {
 	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
 
 	for stackKey := range stacks {
-		projectKey := "configuration"
-		environment := "development"
-		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+		projects := viper.GetStringMap("stacks." + stackKey)
 
-		fmt.Printf("  Stopping stack %s\n", Auroro.Cyan(stackKey))
+		for projectKey := range projects {
+			compose := viper.GetBool("stacks." + stackKey + "." + projectKey + ".compose")
+			if compose {
 
-		_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack rm %s", stackKey), projectPath, func(stdout string) {
-			if c.GlobalBool("verbose") {
-				fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+				environment := "development"
+				projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+
+				fmt.Printf("  Stopping stack %s\n", Auroro.Cyan(stackKey))
+
+				_, stderr, err := utils.ExecuteCwdStream(fmt.Sprintf("docker stack rm %s", stackKey), projectPath, func(stdout string) {
+					if c.GlobalBool("verbose") {
+						fmt.Printf("    %s: %s\n", Auroro.Bold(stackKey), stdout)
+					}
+				})
+
+				if err != nil {
+					log.Fatalf("Stacks rm error:\n%s", stderr)
+				}
+				removeStackContainers(stackKey)
 			}
-		})
-
-		if err != nil {
-			log.Fatalf("Stacks rm error:\n%s", stderr)
 		}
 		removeStackContainers(stackKey)
 	}

@@ -17,7 +17,7 @@ You can install a prebuilt binary to use on several platforms.
 The below code will work on a linux (amd64) machine.
 
 ```bash
-curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.2/mtk-v0.0.2-linux-amd64 --output mtk
+curl -L https://github.com/msplat/msplat-cli/releases/download/v0.0.3/mtk-v0.0.3-linux-amd64 --output mtk
 sudo cp mtk /usr/local/bin/mtk
 sudo chmod +x /usr/local/bin/mtk
 ```
@@ -48,7 +48,7 @@ GLOBAL OPTIONS:
    --version, -v   print the version
 
 VERSION:
-   0.0.2
+   0.0.3
 ```
 
 ## Autocomplete

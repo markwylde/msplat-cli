@@ -89,34 +89,41 @@ func buildProjects(c *cli.Context) error {
 	stacksPath := utils.ResolvePath(viper.GetString("paths.stacks"))
 
 	for stackKey := range stacks {
-		fmt.Printf("%s\n", Auroro.Bold(stackKey))
-		projectKey := "configuration"
-		environment := "development"
-		projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
+		projects := viper.GetStringMap("stacks." + stackKey)
 
-		resp, err := utils.UnixGet("/v1.24/nodes")
-		if err != nil {
-			log.Fatal(err)
-		}
+		for projectKey := range projects {
+			compose := viper.GetBool("stacks." + stackKey + "." + projectKey + ".compose")
+			if compose {
+				fmt.Printf("%s -> %s\n", stackKey, projectKey)
 
-		machines := gjson.Parse(resp).Array()
+				environment := "development"
+				projectPath := path.Join(stacksPath, stackKey, projectKey, environment)
 
-		var wg sync.WaitGroup
-		wg.Add(len(machines))
-		for i, machine := range machines {
-			machineIP := machine.Get("Status.Addr").String()
-			machineID := machine.Get("ID").String()
-			machineName := machine.Get("Description.Hostname").String()
+				resp, err := utils.UnixGet("/v1.24/nodes")
+				if err != nil {
+					log.Fatal(err)
+				}
 
-			if i == 0 {
-				go buildOnMachine(&wg, true, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
-			} else {
-				go buildOnMachine(&wg, false, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
+				machines := gjson.Parse(resp).Array()
+
+				var wg sync.WaitGroup
+				wg.Add(len(machines))
+				for i, machine := range machines {
+					machineIP := machine.Get("Status.Addr").String()
+					machineID := machine.Get("ID").String()
+					machineName := machine.Get("Description.Hostname").String()
+
+					if i == 0 {
+						go buildOnMachine(&wg, true, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
+					} else {
+						go buildOnMachine(&wg, false, machineIP, machineID, machineName, projectPath, c.GlobalBool("verbose"))
+					}
+				}
+				wg.Wait()
+
+				fmt.Printf("\n")
 			}
 		}
-		wg.Wait()
-
-		fmt.Printf("\n")
 	}
 	fmt.Printf("%s\nEverything is complete.\n", Auroro.Green("Images built successfully"))
 
