@@ -62,7 +62,7 @@ func prepareStack(projectPath string, verbose bool) {
 func removeStackContainers(stack string) {
 	fmt.Println("  Cleaning old containers:", stack)
 
-	url := fmt.Sprintf(`/v1.24/containers/json?filters={"label":["com.docker.stack.namespace=%s"]}`, stack)
+	url := fmt.Sprintf(`/v1.24/containers/json?all=1&filters={"label":["com.docker.stack.namespace=%s"]}`, stack)
 
 	resp, err := utils.UnixGet(url)
 	if err != nil {

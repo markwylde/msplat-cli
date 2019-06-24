@@ -17,7 +17,7 @@ func main() {
 	app.Name = "msplat toolkit"
 	app.Description = "A cli for managing msplat environments"
 	app.Usage = "A cli for managing msplat environments"
-	app.Version = "0.0.3"
+	app.Version = "0.0.4"
 
 	app.EnableBashCompletion = true
 
