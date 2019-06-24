@@ -2,24 +2,29 @@ name: Example Configuration
 stacks:
   gateway:
     configuration:
+      compose: true
       url: git@github.com:msplat/gateway-configuration.git
+      variables:
+        auth_url: http://sso.msplat.test
+
     api:
       url: git@github.com:msplat/gateway-api.git
-
-    docker-spy:
-      url: git@github.com:msplat/docker-spy.git
 
     proxy:
       url: git@github.com:msplat/gateway-proxy.git
 
   auth:
     configuration:
+      compose: true
       url: git@github.com:msplat/auth-configuration.git
-      variables:
-        domain: sso.msplat.test
 
     api:
       url: git@github.com:msplat/auth-api.git
 
     ui:
       url: git@github.com:msplat/auth-ui.git
+
+  platform:
+    configuration:
+      compose: true
+      url: git@github.com:msplat/platform-configuration.git
