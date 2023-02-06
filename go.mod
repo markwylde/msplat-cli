@@ -1,30 +1,30 @@
 module msplat-cli
 
 require (
-	github.com/docker/distribution v2.7.0+incompatible // indirect
-	github.com/docker/docker v1.13.1
-	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/docker/go-units v0.3.3 // indirect
-	github.com/fatih/color v1.7.0
-	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-cmd/cmd v1.0.4
-	github.com/google/pprof v0.0.0-20190208070709-b421f19a5c07 // indirect
-	github.com/gosuri/uilive v0.0.0-20170323041506-ac356e6e42cd
-	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
 	github.com/markwylde/cmd v1.0.4-0.20190316202519-ba97f6f7c776
-	github.com/mattn/go-colorable v0.1.0 // indirect
-	github.com/mattn/go-isatty v0.0.4 // indirect
-	github.com/mitchellh/gox v0.4.0 // indirect
-	github.com/mitchellh/iochan v1.0.0 // indirect
-	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spf13/viper v1.3.1
-	github.com/tidwall/gjson v1.1.5
-	github.com/tidwall/match v1.0.1 // indirect
+	github.com/tidwall/gjson v1.9.3
 	github.com/urfave/cli v1.20.0
-	golang.org/x/arch v0.0.0-20181203225421-5a4828bb7045 // indirect
-	golang.org/x/net v0.0.0-20190110200230-915654e7eabc
-	rsc.io/quote v1.5.2
+)
+
+require (
+	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/fsnotify/fsnotify v1.4.7 // indirect
+	github.com/go-cmd/cmd v1.0.4 // indirect
+	github.com/go-test/deep v1.1.0 // indirect
+	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/magiconair/properties v1.8.0 // indirect
+	github.com/mitchellh/mapstructure v1.1.2 // indirect
+	github.com/pelletier/go-toml v1.2.0 // indirect
+	github.com/spf13/afero v1.1.2 // indirect
+	github.com/spf13/cast v1.3.0 // indirect
+	github.com/spf13/jwalterweatherman v1.0.0 // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
+	golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a // indirect
+	golang.org/x/text v0.3.0 // indirect
+	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
